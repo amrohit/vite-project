@@ -5,26 +5,56 @@ import MyTimer from './components/MyTimer';
 import MyUseReducer from './components/MyUseReducer';
 
 function App() {
-  const [show, setShow] = useState(true);
+  const [isFetching, setIsFetching] = useState(false);
+  const [data, setData] = useState();
 
   useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      setShow(false);
-      console.log('Closing timer..');
-    }, 3000);
+    console.log('callin an API');
+    async function callApi() {
+      setIsFetching(true);
 
-    return () => {
-      clearTimeout(timeoutId);
-      console.log('Closing timer..');
-    };
+      const timer = setTimeout(() => {
+        setIsFetching(false);
+        console.log('timer expired');
+        // Promise.resolve().then((res) => {
+        //   console.log('running promise', isFetching);
+        // });
+        clearTimeout(timer);
+      }, 2000);
+
+      const timer2 = setTimeout(() => {
+        setIsFetching(false);
+        console.log('timer expired');
+        // Promise.resolve().then((res) => {
+        //   console.log('running promise', isFetching);
+        // });
+        clearTimeout(timer2);
+      }, 4000);
+
+      console.log('calling fetch');
+
+      const response = await fetch(
+        'https://jsonplaceholder.typicode.com/todos/1'
+      );
+      const data = await response.json();
+      console.log('data received');
+      setData(data);
+      setIsFetching(false);
+    }
+
+    callApi();
   }, []);
 
   return (
     <>
-      <h1 className='text-6xl'>Hello</h1>
-
-      {/* {show && <MyTimer />} */}
-      <MyUseReducer />
+      {/* <MyTimer />
+    <MyUseReducer /> */}
+      {console.log(' render')}
+      {isFetching ? (
+        <p>Loading...</p>
+      ) : (
+        <pre>{JSON.stringify(data, null, 2)}</pre>
+      )}
     </>
   );
 }
